@@ -150,6 +150,112 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-计算机视觉卷积神经网络概述[CS231n课程笔记(一)]" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/07/01/计算机视觉卷积神经网络概述[CS231n课程笔记(一)]/">计算机视觉卷积神经网络概述[CS231n课程笔记(一)]</a>
+    </h1>
+  
+
+        
+        <a href="/2018/07/01/计算机视觉卷积神经网络概述[CS231n课程笔记(一)]/" class="archive-article-date">
+  	<time datetime="2018-07-01T07:42:20.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-01</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>终于结束了所有的期末考试开启暑假模式了，可以有时间做一些自主安排的事情。趁着这个时间通过CS231n了解一下计算机视觉和卷积神经网络的概况，我觉得是一个入门的很好的机会。我希望能把这个课程笔记做到整个课程结束，一方面记录课程笔记是一个很好的机会来表达自己的看法，同时也能让让自己在看完课程之后能对整个课程做一个回顾总结，看看自己到底学到了什么，也一定程度上对自己有着一个鞭策激励的作用。</p>
+<h5 id="计算机视觉的应用">计算机视觉的应用</h5>
+<p>视频信息占据了互联网信息的80%以上，视频中蕴含的信息非常广泛。在互联网和计算速度飞速发展的当下，每过3秒YouTube上都会增加15小时长的视频。广泛而质量越来越高的视频信息来源使得高速、自动化的理解视频信息有着广泛的应用前景：分类、广告等等。</p>
+<h5 id="计算机视觉的学科联系">计算机视觉的学科联系</h5>
+<p>计算机视觉需要综合机器学习、生物学和心理学、物理学、计算机科学从理解其他生物的视觉系统为启发构建一个可以高速处理视觉信息的系统。</p>
+<h3 id="计算机视觉的历史">计算机视觉的历史</h3>
+<p>这部分概述了计算机视觉从出现到今天的发展成果的历史。</p>
+<p>当考察计算机视觉前先回顾一下生物的视觉起源。5.4亿年前发生了一次“进化大爆炸”(evolution’s Big Bang)，在一千万年之间出现了上千种物种，对于这个问题澳大利亚动物学家安德鲁帕克(Andrew Parker)提出了一种令人信服的解说：在那个时候眼睛，即视觉出现了。这极大的促进了动物的进化和物种的形成。由此可见视觉之重要性。</p>
+<p>人类的视觉历史起源于小孔成像的简易相机。在人工视觉中最具有影响力的一项研究成果是由Hubel&amp;Wiesel做出的，他们使用电极来探索哺乳动物识别图像的机理。最终发现猫的视觉神经中有许多神经元，但最重要的神经元是对于某些特定方向的边作出简单反应的神经元。</p>
+<p>这启发了学者的研究，其中影响非常深远的是David Marr在二十世纪七十年代提出的Stages of Visual Representation，他认为计算机视觉的问题可以分为四个阶段：</p>
+<ol type="1">
+<li>输入图像</li>
+<li>Primal Sketch: 分析图像中的关键几何特征：零点、边、虚线、曲线边界等等</li>
+<li>2 1/2-D Sketch: 定位表面的取向并且将不同深度和不同表面取向分割开来</li>
+<li>3-D Model Representation: 对物体做3D建模</li>
+</ol>
+<p>另一个在70年代引发讨论的问题是：如何识别和表征物体？在那个计算机速度较慢、数据不足的年代对于这个问题当时的学界产生了两种看法：</p>
+<ol type="1">
+<li><p>Generalized Cylinder: 认为应用柱体来表征人体，将人体的运动抽象成柱体的运动。<img src="https://ws1.sinaimg.cn/large/006tNc79ly1fsug1tnefuj30fc0nitaj.jpg" width="40%" height="40%"></p></li>
+<li><p>Pictorial Structure: 采取关键点(Critical Node)和关键点之间的弹性连线来描绘人的动作。<img src="https://ws3.sinaimg.cn/large/006tNc79ly1fsug37adx7j30kw0osjuh.jpg" width="40%" height="40%"></p></li>
+</ol>
+<p>总的来说，上个世纪的这些理论基本上仍然停留在toy的阶段，很难将其应用到实际实践中去。因此人们考虑到在解决图像认知问题之前，先解决图像分割问题（不要求分清楚每个区域的意义，需要的是分成不同的区域）是一个更现实的选择，这个问题被来自Berkeley的Jiangbo Shi很好地解决了。这个领域另一个应用问题是人脸检测问题，2001年，采取统计学习的方法，使用AdaBoost算法在实际可行的时间里解决了这个问题（注意到那个年代的芯片运行速度是非常慢的）。因此在这个领域我们继续解决物体理解问题，SIFT feature是一个解决这个问题的框架，他关注的是在不同的条件下的相同的特征，这使得物体识别从关注整体的模式匹配问题极大的简化为某些固定特征的匹配问题。</p>
+<p>下面说到数据集的问题，到2000年以后才开始有了高质量的benchmark data set. 其中PASCAL Visual Object Challenge是具有影响力的一个数据集，包含了20个物品种类。由于数据集的不足，深度学习天然具有的过拟合的倾向，因此要想达到更高精确度的、更具有普适性的视觉，数据集成为了瓶颈。这也是image-net应运而生的原因。从2010年起的冠军错误率可以看到在2012年经历了一个巨大的改进，而当年的冠军正是使用卷积神经网络（CNN）来解决的（AlexNet），之后几年的连续改进均是在这个网络的基础上进行的优化和改进。卷积神经网络也是这门课的主题。由此可见卷积神经网络在计算机视觉方面的广阔的前景。</p>
+<p>之后为课程本身的Overview，不再详叙。</p>
+<p>感谢您的观看，如有谬误请指正，不胜感激！（评论系统为Disqus，可能需要翻墙使用）</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Vision</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Deep learning</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">课程</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/07/01/计算机视觉卷积神经网络概述[CS231n课程笔记(一)]/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-关于经济波动理论学习的部分思考(一)" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -255,15 +361,15 @@ P = \bar P
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">课程</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">宏观经济学</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">经双</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">课程</a>
         		</li>
       		
 		</ul>
@@ -477,15 +583,23 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Vision</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Deep learning</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">课程</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">宏观经济学</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">经双</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">课程</a>
               </li>
             
             <div class="clearfix"></div>
