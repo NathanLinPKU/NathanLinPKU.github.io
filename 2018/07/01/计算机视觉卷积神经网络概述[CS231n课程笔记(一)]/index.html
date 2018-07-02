@@ -9,7 +9,7 @@
   <title>计算机视觉卷积神经网络概述[CS231n课程笔记(一)] | Ti</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="终于结束了所有的期末考试开启暑假模式了，可以有时间做一些自主安排的事情。趁着这个时间通过CS231n了解一下计算机视觉和卷积神经网络的概况，我觉得是一个入门的很好的机会。我希望能把这个课程笔记做到整个课程结束，一方面记录课程笔记是一个很好的机会来表达自己的看法，同时也能让让自己在看完课程之后能对整个课程做一个回顾总结，看看自己到底学到了什么，也一定程度上对自己有着一个鞭策激励的作用。 计算机视觉的">
-<meta name="keywords" content="Vision,Deep learning,课程">
+<meta name="keywords" content="课程,Vision,Deep learning">
 <meta property="og:type" content="article">
 <meta property="og:title" content="计算机视觉卷积神经网络概述[CS231n课程笔记(一)]">
 <meta property="og:url" content="http://NathanLinPKU.github.io/2018/07/01/计算机视觉卷积神经网络概述[CS231n课程笔记(一)]/index.html">
@@ -183,17 +183,17 @@
 <p>计算机视觉需要综合机器学习、生物学和心理学、物理学、计算机科学从理解其他生物的视觉系统为启发构建一个可以高速处理视觉信息的系统。</p>
 <h3 id="计算机视觉的历史">计算机视觉的历史</h3>
 <p>这部分概述了计算机视觉从出现到今天的发展成果的历史。</p>
-<p>当考察计算机视觉前先回顾一下生物的视觉起源。5.4亿年前发生了一次“进化大爆炸”(evolution’s Big Bang)，在一千万年之间出现了上千种物种，对于这个问题澳大利亚动物学家安德鲁帕克(Andrew Parker)提出了一种令人信服的解说：在那个时候眼睛，即视觉出现了。这极大的促进了动物的进化和物种的形成。由此可见视觉之重要性。</p>
+<p>当考察计算机视觉前先回顾一下生物的视觉起源。5.4亿年前发生了一次“进化大爆炸”(evolution's Big Bang)，在一千万年之间出现了上千种物种，对于这个问题澳大利亚动物学家安德鲁帕克(Andrew Parker)提出了一种令人信服的解说：在那个时候眼睛，即视觉出现了。这极大的促进了动物的进化和物种的形成。由此可见视觉之重要性。</p>
 <p>人类的视觉历史起源于小孔成像的简易相机。在人工视觉中最具有影响力的一项研究成果是由Hubel&amp;Wiesel做出的，他们使用电极来探索哺乳动物识别图像的机理。最终发现猫的视觉神经中有许多神经元，但最重要的神经元是对于某些特定方向的边作出简单反应的神经元。</p>
 <p>这启发了学者的研究，其中影响非常深远的是David Marr在二十世纪七十年代提出的Stages of Visual Representation，他认为计算机视觉的问题可以分为四个阶段：</p>
-<ol type="1">
+<ol style="list-style-type: decimal">
 <li>输入图像</li>
 <li>Primal Sketch: 分析图像中的关键几何特征：零点、边、虚线、曲线边界等等</li>
 <li>2 1/2-D Sketch: 定位表面的取向并且将不同深度和不同表面取向分割开来</li>
 <li>3-D Model Representation: 对物体做3D建模</li>
 </ol>
 <p>另一个在70年代引发讨论的问题是：如何识别和表征物体？在那个计算机速度较慢、数据不足的年代对于这个问题当时的学界产生了两种看法：</p>
-<ol type="1">
+<ol style="list-style-type: decimal">
 <li><p>Generalized Cylinder: 认为应用柱体来表征人体，将人体的运动抽象成柱体的运动。<img src="https://ws1.sinaimg.cn/large/006tNc79ly1fsug1tnefuj30fc0nitaj.jpg" width="40%" height="40%"></p></li>
 <li><p>Pictorial Structure: 采取关键点(Critical Node)和关键点之间的弹性连线来描绘人的动作。<img src="https://ws3.sinaimg.cn/large/006tNc79ly1fsug37adx7j30kw0osjuh.jpg" width="40%" height="40%"></p></li>
 </ol>
@@ -214,15 +214,15 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">课程</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Vision</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Deep learning</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">课程</a>
         		</li>
       		
 		</ul>
@@ -291,6 +291,15 @@
 
   
 <nav id="article-nav">
+  
+    <a href="/2018/07/02/图像分类算法-K近邻算法与线性算法[CS231n课程笔记(二)]/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          图像分类算法-K近邻算法与线性算法[CS231n课程笔记(二)]
+        
+      </div>
+    </a>
   
   
     <a href="/2018/05/07/关于经济波动理论学习的部分思考(一)/" id="article-nav-older" class="article-nav-link-wrap">
@@ -453,11 +462,11 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Vision</a>
+                <a href="javascript:void(0)" class="js-tag color1">宏观经济学</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Deep learning</a>
+                <a href="javascript:void(0)" class="js-tag color3">经双</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -465,11 +474,11 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">宏观经济学</a>
+                <a href="javascript:void(0)" class="js-tag color2">Vision</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">经双</a>
+                <a href="javascript:void(0)" class="js-tag color4">Deep learning</a>
               </li>
             
             <div class="clearfix"></div>

@@ -150,6 +150,142 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-图像分类算法-K近邻算法与线性算法[CS231n课程笔记(二)]" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/07/02/图像分类算法-K近邻算法与线性算法[CS231n课程笔记(二)]/">图像分类算法-K近邻算法与线性算法[CS231n课程笔记(二)]</a>
+    </h1>
+  
+
+        
+        <a href="/2018/07/02/图像分类算法-K近邻算法与线性算法[CS231n课程笔记(二)]/" class="archive-article-date">
+  	<time datetime="2018-07-02T15:33:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-02</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>上一节课主要内容是回顾了对Vision的认识和计算机视觉的发展历史以及现实中的应用，以概述为主。这一节开始课程正式开始具体的实践算法。本节主要讲了图像分类算法中的K-近邻算法和线性算法。</p>
+<p>首先是对于图像分类的定义：给定一个label集合，判断给定图片是label集合中的哪一个。</p>
+<p>要认识到图像问题的复杂性：当角度、明暗、姿势、位置、遮挡等因素不同时，图像所代表的矩阵可能完全不同，但是算法需要对这些变化robust。对于大脑可能这不是一个问题，但是对算法来说就是一个很难处理的情况了。</p>
+<p>一般情况下我们的算法是一个函数，给定一个输入输出一个输出值。但是在识别问题中，不同的物体有着不同的特征，如果采取硬编码的模式（对于不同物体具体来进行编码）工作量过大，不切实际。因此提出一种在处理该类问题中的重要的处理方法：</p>
+<h4 id="数据驱动方法data-driven-approach">数据驱动方法(Data-Driven Approach)</h4>
+<p>数据驱动方法分为3步：</p>
+<ol style="list-style-type: decimal">
+<li>收集数据集</li>
+<li>训练分类器</li>
+<li>在新图片中评价分类器</li>
+</ol>
+<p>由此数据驱动方法的代码从框架上来讲分为两个函数<code>def train</code>和<code>def predict</code></p>
+<p>数据驱动方法是比深度学习、神经网络更为广泛的一种处理方法。核心在于通过训练集提取出公共的特征、然后利用训练出的模型来进行推断。</p>
+<h2 id="k-近邻算法-knn">K-近邻算法 KNN</h2>
+<p>近邻算法本质上是从所有的图像中挑选距离样本图像近的图像作为对该样本的预测的基准。最近邻算法即为直接挑选最近的，K-近邻算法为挑选出前K近的图片，然后在这些图片中做投票选择。直观上可以预测到，最近邻算法最大的缺陷就是当出现某一个点由于某种原因落入其他点密集的区域时，会形成一个“孤岛”，这对于模型的预测显然是不可接受的。因此K=1时往往不是最好的预测。</p>
+<p>用数据驱动方法的框架来解释，即在训练模块，不需要对训练集做任何改变，即完整的保留训练集的所有元素信息。在预测模块，检查所有训练集中的图像哪个与当前图像距离最近，则将该图像的label定义为当前图像的label.</p>
+<p>那么就出现了一个非常关键的问题，如何定义距离？</p>
+<h4 id="l1距离">L1距离</h4>
+<p><code>L1 distance</code>，也称<code>Manhattan distance</code> <span class="math display">\[
+d_1(I_1,I_2)=\sum_{p}|I_1^p-I_2^p|
+\]</span> 即为将每个维度差异的绝对值求和作为衡量距离的标准。</p>
+<h4 id="l2距离">L2距离</h4>
+<p><code>L2 distance</code>，也称<code>Euclidean distance</code></p>
+<p><span class="math inline">\(d_2(I_1,I_2)=\sqrt{\sum_{p}(I_1^p-I_2^p)^2}\)</span></p>
+<p>L2距离似乎更符合我们的直觉，并且L2有着一个很好的性质——旋转不变性。当旋转坐标轴时L1的距离会发生改变，而L2距离则不会受到旋转的影响。</p>
+<h4 id="缺陷">缺陷</h4>
+<h6 id="时间复杂度">时间复杂度</h6>
+<p>近邻算法在<code>model</code>环节直接保留所有信息，因此时间复杂度为O(1)，在<code>predict</code>环节则需要比对所有图像找到最小值，因此复杂度为O(n)，从这里我们可以看到近邻算法在实际应用中其实有着复杂度方面的劣势：理想的算法应当是可以容忍<code>train</code>部分的低速，因为<code>train</code>的操作是相对来说“一劳永逸”的，而<code>predict</code>的操作则需要在各种各样不同的终端上工作，而且需要大量的运算，因此一个时间复杂度低的<code>predict</code>是很核心的一个需求。</p>
+<h6 id="距离对于信息的度量不够精确">距离对于信息的度量不够精确</h6>
+<p>在课上老师通过对矩阵的一些调整构造，得到了下方Boxed, Shifted, Tinted三幅图，这三幅图与Original的L2距离均相等，也意味着以L2距离度量，三幅图对于Original而言是无差别的，但显然从感官上来讲，三者与原图有着不可忽略的差别。因此近邻算法中距离的度量不够准确，对算法的效果具有很大的影响。</p>
+<div class="figure">
+<img src="https://ws1.sinaimg.cn/large/006tKfTcly1fsvz0sqpd5j31je0e149w.jpg">
+
+</div>
+<h6 id="维度灾难">维度灾难</h6>
+<p>对于K近邻算法我们需要密集的数据集，否则对于稀疏部分的度量可能会非常不准确（基于距离的度量）。这意味着对于高维数据，近邻算法需要的样本数量是指数级别增加的，因此在实践中不现实。</p>
+<h2 id="超参数">超参数</h2>
+<p>可以看到在K-近邻算法问题中，K的值即为一个参数，但这个参数并非通过训练模型给出，而是在训练前给定的，设定不同的K对模型的最终结果有着不同影响，这一类并非通过模型训练得出的参数称为超参数。那么如何寻找对于问题解决最优的超参数呢？直觉的想法是多尝试一些参数，那么如何衡量每次尝试的优劣呢？有如下一些想法：</p>
+<ol style="list-style-type: decimal">
+<li>直接选择对于你给出的数据集表选最好的超参数。(terrible)，1-近邻算法在这种情况下是100%正确的算法，但是却不是最理想的算法。原因在于：<strong>在分类问题中我们需要的是在训练集以外的未知集合上表现的更好的模型，而非已知集合</strong></li>
+<li>将数据分为训练集和测试集。选择在测试集上表现最好的超参数。这个仍然有问题，在test集合上表现最好，我们仍然无法衡量对于<strong>未知数据</strong>的表现。</li>
+<li>将数据分位训练集、验证集和测试集。选择在验证集上表现最好的超参数，在test上进行测试，得到算法的表现。</li>
+</ol>
+<p>总的来说，第三种方法改进了前两种算法，得到了相对来说更加可靠的对于未知数据的算法表现的度量。</p>
+<h2 id="线性分类">线性分类</h2>
+<p>神经网络其实本质上就是对于神经元的一种拼接，就像Legos.</p>
+<p>线性分类就是将输入数据用系数矩阵W做线性组合，输出一个n维向量，每一个维度代表对应的label的分值。在训练时我们通过训练集来训练出合理的W，在预测阶段只需要知道W即可在很短的时间内对输入进行预测。即 <span class="math display">\[
+f(x,W)=W*x+b
+\]</span> 我们可以从向量的角度来理解，将图片放在其向量所在的高维空间中考虑，线性分类其实就是在高维空间中做出线性决策边界。这也意味着线性分类有着一些难于避免的问题：</p>
+<div class="figure">
+<img src="https://ws3.sinaimg.cn/large/006tKfTcly1fsvzpqz55wj31kw0oyqdz.jpg">
+
+</div>
+<p>上图中的三种情况均无法作出线性的决策边界使得两部分能够很好的分离开来。包括奇偶性、多模态的问题，因此线性分类器在实际应用中也是不够精确的。</p>
+<p>以上是本节课的主要内容，在下节课将关注如何利用训练集中寻找“最合适”的系数矩阵W，定义损失函数和最优化的问题。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">课程</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Vision</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Deep learning</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/07/02/图像分类算法-K近邻算法与线性算法[CS231n课程笔记(二)]/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-计算机视觉卷积神经网络概述[CS231n课程笔记(一)]" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -177,17 +313,17 @@
 <p>计算机视觉需要综合机器学习、生物学和心理学、物理学、计算机科学从理解其他生物的视觉系统为启发构建一个可以高速处理视觉信息的系统。</p>
 <h3 id="计算机视觉的历史">计算机视觉的历史</h3>
 <p>这部分概述了计算机视觉从出现到今天的发展成果的历史。</p>
-<p>当考察计算机视觉前先回顾一下生物的视觉起源。5.4亿年前发生了一次“进化大爆炸”(evolution’s Big Bang)，在一千万年之间出现了上千种物种，对于这个问题澳大利亚动物学家安德鲁帕克(Andrew Parker)提出了一种令人信服的解说：在那个时候眼睛，即视觉出现了。这极大的促进了动物的进化和物种的形成。由此可见视觉之重要性。</p>
+<p>当考察计算机视觉前先回顾一下生物的视觉起源。5.4亿年前发生了一次“进化大爆炸”(evolution's Big Bang)，在一千万年之间出现了上千种物种，对于这个问题澳大利亚动物学家安德鲁帕克(Andrew Parker)提出了一种令人信服的解说：在那个时候眼睛，即视觉出现了。这极大的促进了动物的进化和物种的形成。由此可见视觉之重要性。</p>
 <p>人类的视觉历史起源于小孔成像的简易相机。在人工视觉中最具有影响力的一项研究成果是由Hubel&amp;Wiesel做出的，他们使用电极来探索哺乳动物识别图像的机理。最终发现猫的视觉神经中有许多神经元，但最重要的神经元是对于某些特定方向的边作出简单反应的神经元。</p>
 <p>这启发了学者的研究，其中影响非常深远的是David Marr在二十世纪七十年代提出的Stages of Visual Representation，他认为计算机视觉的问题可以分为四个阶段：</p>
-<ol type="1">
+<ol style="list-style-type: decimal">
 <li>输入图像</li>
 <li>Primal Sketch: 分析图像中的关键几何特征：零点、边、虚线、曲线边界等等</li>
 <li>2 1/2-D Sketch: 定位表面的取向并且将不同深度和不同表面取向分割开来</li>
 <li>3-D Model Representation: 对物体做3D建模</li>
 </ol>
 <p>另一个在70年代引发讨论的问题是：如何识别和表征物体？在那个计算机速度较慢、数据不足的年代对于这个问题当时的学界产生了两种看法：</p>
-<ol type="1">
+<ol style="list-style-type: decimal">
 <li><p>Generalized Cylinder: 认为应用柱体来表征人体，将人体的运动抽象成柱体的运动。<img src="https://ws1.sinaimg.cn/large/006tNc79ly1fsug1tnefuj30fc0nitaj.jpg" width="40%" height="40%"></p></li>
 <li><p>Pictorial Structure: 采取关键点(Critical Node)和关键点之间的弹性连线来描绘人的动作。<img src="https://ws3.sinaimg.cn/large/006tNc79ly1fsug37adx7j30kw0osjuh.jpg" width="40%" height="40%"></p></li>
 </ol>
@@ -208,15 +344,15 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">课程</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Vision</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Deep learning</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">课程</a>
         		</li>
       		
 		</ul>
@@ -280,13 +416,15 @@
 <p>简而言之：总供给总需求模型即为在宏观的角度上对经济中对产品的需求与供给做出与价格水平P相关的分析，通过两者的均衡来确定价格P与收入Y。（是的，经济波动理论并非均衡不存在，而是以新的方式考察经济中的均衡）</p>
 <p>而IS-LM模型则以更精细的角度来考察经济中变量的关系。IS曲线的得出即放松了Y不变的限制，得出了投资(利率)与Y的一一对应关系。于此同时在货币市场上由于人们具有的流动性偏好，因此人们对货币的需求量与利率负相关，与产出正相关，因此导出了另一组利率与Y的关系. 我认为，<strong>产品市场上考察的利率以投资的成本为主体，货币市场上考察的利率以投资的收入为主体，即产品市场上人们因为利率高而减少投资是因为投资带来的成本增高，货币市场上人们因为利率高而坚持减持货币是因为投资带来的收益增高，因此两者必然相同，</strong>故在此情况下，市场中的均衡是IS与LM曲线的焦点。</p>
 <p>在囫囵吞枣地叙述完我对两者的理解后，我产生了以下疑问，并就这些问题有了一些初步的回答。</p>
-<ol type="1">
+<ol style="list-style-type: decimal">
 <li>在凯恩斯交叉模型中，税收乘数与支出乘数在古典模型中有没有对应的概念？</li>
-<li>IS-LM模型能够确认一个均衡，总供给总需求曲线也能确认一个均衡，那么两者的区别在哪里？功能有什么不同？
+<li>IS-LM模型能够确认一个均衡，总供给总需求曲线也能确认一个均衡，那么两者的区别在哪里？功能有什么不同？</li>
+</ol>
 <ul>
 <li>IS-LM模型导出的总需求曲线与之前通过数量方程式导出的总需求曲线有什么区别和联系？</li>
 <li>总需求曲线为P与Y的关系，在推导LM曲线的过程中我们做出了P短期不变的假设，那么LM曲线的成立前提是否应当为短期？由此IS-LM模型推导出的总需求曲线是否只能与短期下价格不变的曲线相交的交点才具有意义？（因为长期情况下p会变，LM曲线似乎不符合长期需求）</li>
-</ul></li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
 <li>如何从方程的角度来看待古典与经济波动理论的区别于联系？</li>
 </ol>
 <p>关于以上问题在下面我将会进行初步的讨论。</p>
@@ -294,7 +432,7 @@
 <p>没有。</p>
 <p>原因是税收乘数与支出乘数的概念来源是在调整一定量的税收/政府购买的情况下对产出造成的影响的倍数。</p>
 <p>在古典模型中，产出Y是一个固定的值<span class="math inline">\(\bar Y\)</span>因此调整外生变量G或T变化的是投资<span class="math inline">\(I(r)\)</span>而不涉及<span class="math inline">\(Y\)</span>的变化。</p>
-<p>###二</p>
+<h3 id="二">二</h3>
 <p>我认为接下来的问题应该换一个角度来看待IS-LM模型。</p>
 <p>我倾向于将经济学中供给与需求画图求均衡或者说利用曲线图来求解均衡的行为视为一个<strong>二元方程组</strong>求解的过程.</p>
 <p>例如在微观经济学中市场对某一商品的供给和需求相同，即为求解: <span class="math display">\[
@@ -361,15 +499,15 @@ P = \bar P
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">课程</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">宏观经济学</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">经双</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">课程</a>
         		</li>
       		
 		</ul>
@@ -583,11 +721,11 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Vision</a>
+                <a href="javascript:void(0)" class="js-tag color1">宏观经济学</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Deep learning</a>
+                <a href="javascript:void(0)" class="js-tag color3">经双</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -595,11 +733,11 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">宏观经济学</a>
+                <a href="javascript:void(0)" class="js-tag color2">Vision</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">经双</a>
+                <a href="javascript:void(0)" class="js-tag color4">Deep learning</a>
               </li>
             
             <div class="clearfix"></div>
